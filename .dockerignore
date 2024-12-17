@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+out
+
+# Testing
+coverage
+tests/
+stories/
+cypress/videos
+cypress/screenshots
+
+# Development/Environment
+.env*.local
+.env.development
+.env.test
+.env.production
+
+# Version control
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+
+# Misc
+README.md
+*.log
+.DS_Store
+.dockerignore
+Dockerfile
+docker-compose*
