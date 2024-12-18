@@ -21,7 +21,7 @@ const Dashboard = () => {
         <h1 className='text-left text-3xl font-bold'>Invoices</h1>
         <div>
           <Button className='inline-flex gap-2' variant='ghost' asChild>
-            <Link href='/invoices/new'>
+            <Link href='/invoices/create'>
               <CirclePlus className='h-4 w-4' />
               Create Invoice
             </Link>
