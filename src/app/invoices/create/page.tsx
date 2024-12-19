@@ -1,23 +1,18 @@
-import { sql } from 'drizzle-orm';
-
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
-import { db } from '@/drizzle';
+import { createInvoice } from '@/app/actions';
 
 const Dashboard = async () => {
-  const results = await db.execute(sql`SELECT current_database()`);
-  console.log(results);
-
   return (
     <main className='mx-auto my-12 flex h-full max-w-5xl flex-col justify-center gap-6'>
       <div className='flex justify-between'>
         <h1 className='text-left text-3xl font-bold'>Create Invoice</h1>
       </div>
 
-      <form className='grid max-w-xs gap-4'>
+      <form action={createInvoice} className='grid max-w-xs gap-4'>
         <div>
           <Label htmlFor='name' className='mb-2 block text-sm font-semibold'>
             Billing Name
