@@ -1,5 +1,5 @@
 {
-  "id": "63647cff-d2c0-466e-b0e3-8c394844cbee",
+  "id": "3ab4103b-a377-465b-a0ba-05c3640aa48b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -54,7 +54,12 @@
     "public.status": {
       "name": "status",
       "schema": "public",
-      "values": ["open", "paid", "void", "uncollectible"]
+      "values": [
+        "open",
+        "paid",
+        "void",
+        "uncollectible"
+      ]
     }
   },
   "schemas": {},
