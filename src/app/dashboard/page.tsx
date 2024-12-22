@@ -14,7 +14,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const Dashboard = () => {
+import { db } from '@/drizzle';
+import { Invoice } from '@/drizzle/schema';
+
+const Dashboard = async () => {
+  const data = await db.select().from(Invoice);
+  console.log(data);
   return (
     <main className='mx-auto my-12 flex h-full max-w-5xl flex-col justify-center gap-6 text-center'>
       <div className='flex justify-between'>
@@ -40,23 +45,42 @@ const Dashboard = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className='p-4 text-left font-medium'>
-              <span className='font-semibold'>INV001</span>
-            </TableCell>
-            <TableCell className='p-4 text-left'>
-              <span className='font-semibold'>Paid</span>
-            </TableCell>
-            <TableCell className='p-4 text-left'>
-              <span>emailaddress@gmail.com</span>
-            </TableCell>
-            <TableCell className='p-4 text-left'>
-              <Badge className='rounded-full'>Badge</Badge>
-            </TableCell>
-            <TableCell className='p-4 text-right'>
-              <span className='font-semibold'> $250.00</span>
-            </TableCell>
-          </TableRow>
+          {data.map(invoice => (
+            <TableRow key={invoice.id}>
+              <TableCell className='p-0 text-left font-medium'>
+                <Link
+                  href={`/invoices/${invoice.id}`}
+                  className='block p-4 font-semibold'
+                >
+                  {new Date(invoice.createTs).toLocaleDateString()}
+                </Link>
+              </TableCell>
+              <TableCell className='p-0 text-left'>
+                <Link
+                  href={`/invoices/${invoice.id}`}
+                  className='block p-4 font-semibold'
+                >
+                  {invoice.status}
+                </Link>
+              </TableCell>
+              <TableCell className='p-0 text-left'>
+                <Link href={`/invoices/${invoice.id}`} className='p-4'>
+                  emailaddress@gmail
+                </Link>
+              </TableCell>
+              <TableCell className='p-0 text-left'>
+                <Badge className='rounded-full'>Badge</Badge>
+              </TableCell>
+              <TableCell className='p-0 text-right'>
+                <Link
+                  href={`/invoices/${invoice.id}`}
+                  className='block p-4 font-semibold'
+                >
+                  ${(invoice.value / 100).toFixed(2)}
+                </Link>
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </main>
