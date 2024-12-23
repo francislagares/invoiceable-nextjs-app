@@ -1,12 +1,6 @@
 import Link from 'next/link';
 
-import {
-  OrganizationSwitcher,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs';
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 import Container from '@/components/Container';
 
@@ -19,12 +13,6 @@ const Header = () => {
             <p className='font-bold'>
               <Link href='/dashboard'>Invoicipedia</Link>
             </p>
-            <span className='text-slate-300'>/</span>
-            <SignedIn>
-              <span className='-ml-2'>
-                <OrganizationSwitcher afterCreateOrganizationUrl='/dashboard' />
-              </span>
-            </SignedIn>
           </div>
           <div>
             <SignedOut>

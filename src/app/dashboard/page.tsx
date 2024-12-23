@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
 import { auth } from '@clerk/nextjs/server';
-import { eq } from 'drizzle-orm';
 import { CirclePlus } from 'lucide-react';
 
 import Container from '@/components/Container';
@@ -18,14 +17,23 @@ import {
 } from '@/components/ui/table';
 
 import { db } from '@/drizzle';
+import { Invoice } from '@/drizzle/schema';
 import { cn } from '@/lib/utils';
 
 export default async function Home() {
-  const { userId, orgId } = auth();
+  const { userId } = await auth();
 
   if (!userId) return;
 
-  const invoices = results?.map(({ invoices, customers }) => {
+  // Displaying all invoices for public demo
+
+  const data: Array<{
+    invoices: typeof Invoice.$inferSelect;
+    customers: typeof Customer.$inferSelect;
+  }> = await db.select().from(Invoice);
+   .innerJoin(Customer, eq(Invoice.customerId, Customer.id));
+
+  const invoices = data?.map(({ invoices, customers }) => {
     return {
       ...invoices,
       customer: customers,
@@ -61,51 +69,57 @@ export default async function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map(result => {
+            {invoices.map(invoice => {
               return (
-                <TableRow key={result.id}>
+                <TableRow key={invoice.id}>
                   <TableCell className='p-0 text-left font-medium'>
                     <Link
-                      href={`/invoices/${result.id}`}
+                      href={`/invoices/${invoice.id}`}
                       className='block p-4 font-semibold'
                     >
-                      {new Date(result.createTs).toLocaleDateString()}
+                      {new Date(invoice.createTs).toLocaleDateString()}
                     </Link>
                   </TableCell>
                   <TableCell className='p-0 text-left'>
                     <Link
-                      href={`/invoices/${result.id}`}
+                      href={`/invoices/${invoice.id}`}
                       className='block p-4 font-semibold'
                     >
-                      {result.customer.name}
+                      {invoice.customer.name}
                     </Link>
                   </TableCell>
                   <TableCell className='p-0 text-left'>
-                    <Link className='block p-4' href={`/invoices/${result.id}`}>
-                      {result.customer.email}
+                    <Link
+                      className='block p-4'
+                      href={`/invoices/${invoice.id}`}
+                    >
+                      {invoice.customer.email}
                     </Link>
                   </TableCell>
                   <TableCell className='p-0 text-center'>
-                    <Link className='block p-4' href={`/invoices/${result.id}`}>
+                    <Link
+                      className='block p-4'
+                      href={`/invoices/${invoice.id}`}
+                    >
                       <Badge
                         className={cn(
                           'rounded-full capitalize',
-                          result.status === 'open' && 'bg-blue-500',
-                          result.status === 'paid' && 'bg-green-600',
-                          result.status === 'void' && 'bg-zinc-700',
-                          result.status === 'uncollectible' && 'bg-red-600',
+                          invoice.status === 'open' && 'bg-blue-500',
+                          invoice.status === 'paid' && 'bg-green-600',
+                          invoice.status === 'void' && 'bg-zinc-700',
+                          invoice.status === 'uncollectible' && 'bg-red-600',
                         )}
                       >
-                        {result.status}
+                        {invoice.status}
                       </Badge>
                     </Link>
                   </TableCell>
                   <TableCell className='p-0 text-right'>
                     <Link
-                      href={`/invoices/${result.id}`}
+                      href={`/invoices/${invoice.id}`}
                       className='block p-4 font-semibold'
                     >
-                      ${(result.value / 100).toFixed(2)}
+                      ${(invoice.value / 100).toFixed(2)}
                     </Link>
                   </TableCell>
                 </TableRow>

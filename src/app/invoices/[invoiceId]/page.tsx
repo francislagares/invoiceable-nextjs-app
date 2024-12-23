@@ -1,27 +1,42 @@
+import { notFound } from 'next/navigation';
+
+import { auth } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/drizzle';
 import { Invoice } from '@/drizzle/schema';
 
-const InvoiceDetail = async ({ params }: { params: { invoiceId: string } }) => {
-  const invoiceId = parseInt(params.invoiceId);
+import InvoiceDetail from './components/Invoice';
 
-  const [invoice] = await db
+const InvoicePage = async ({ params }: { params: { invoiceId: string } }) => {
+  const { userId } = await auth();
+
+  if (!userId) return;
+
+  const invoiceId = Number.parseInt(params.invoiceId);
+
+  if (Number.isNaN(invoiceId)) {
+    throw new Error('Invalid Invoice ID');
+  }
+
+  const [data] = await db
     .select()
     .from(Invoice)
     .where(eq(Invoice.id, invoiceId))
     .limit(1);
 
-  console.log('result', invoice);
+  console.log('result', data);
 
-  return (
-    <main className='mx-auto my-12 flex h-full max-w-5xl flex-col justify-center gap-6 text-center'>
-      <div className='flex justify-between'>
-        <h1 className='text-left text-3xl font-bold'>Invoice {invoiceId}</h1>
-        <div></div>
-      </div>
-    </main>
-  );
+  if (!data) {
+    notFound();
+  }
+
+  const invoice = {
+    ...data.invoices,
+    customer: data.customers,
+  };
+
+  return <InvoiceDetail invoice={invoice} />;
 };
 
-export default InvoiceDetail;
+export default InvoicePage;

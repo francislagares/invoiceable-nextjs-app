@@ -1,4 +1,5 @@
 'use client';
+
 import { useOptimistic } from 'react';
 
 import Link from 'next/link';
@@ -9,35 +10,25 @@ import Container from '@/components/Container';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { deleteInvoiceAction, updateStatusAction } from '@/app/actions';
+import { updateInvoiceStatus } from '@/app/actions';
+import { AVAILABLE_STATUSES } from '@/constants/invoice-status';
 import { cn } from '@/lib/utils';
 
-import type { Customers, Invoices } from '@/db/schema';
-
-import { AVAILABLE_STATUSES } from '@/data/invoices';
+import type { Customer, Invoice } from '@/drizzle/schema';
 
 interface InvoiceProps {
-  invoice: typeof Invoices.$inferSelect & {
-    customer: typeof Customers.$inferSelect;
+  invoice: typeof Invoice.$inferSelect & {
+    customer: typeof Customer.$inferSelect;
   };
 }
 
-export default function Invoice({ invoice }: InvoiceProps) {
+const InvoiceDetail = ({ invoice }: InvoiceProps) => {
   const [currentStatus, setCurrentStatus] = useOptimistic(
     invoice.status,
     (_state, newStatus) => {
@@ -49,7 +40,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
     const originalStatus = currentStatus;
     setCurrentStatus(formData.get('status'));
     try {
-      await updateStatusAction(formData);
+      await updateInvoiceStatus(formData);
     } catch {
       setCurrentStatus(originalStatus);
     }
@@ -146,7 +137,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
                   <DialogFooter>
                     <form
                       className='flex justify-center'
-                      action={deleteInvoiceAction}
+                      action={deleteInvoice}
                     >
                       <input type='hidden' name='id' value={invoice.id} />
                       <Button
@@ -200,4 +191,6 @@ export default function Invoice({ invoice }: InvoiceProps) {
       </Container>
     </main>
   );
-}
+};
+
+export default InvoiceDetail;
