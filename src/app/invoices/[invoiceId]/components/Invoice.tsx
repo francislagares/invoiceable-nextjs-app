@@ -45,7 +45,7 @@ const InvoiceDetail = ({ invoice }: InvoiceProps) => {
     },
   );
 
-  async function handleOnUpdateStatus(formData: FormData) {
+  const handleOnUpdateStatus = async (formData: FormData) => {
     const originalStatus = currentStatus;
     setCurrentStatus(formData.get('status'));
     try {
@@ -53,7 +53,8 @@ const InvoiceDetail = ({ invoice }: InvoiceProps) => {
     } catch {
       setCurrentStatus(originalStatus);
     }
-  }
+  };
+
   return (
     <main className='h-full w-full'>
       <Container>
