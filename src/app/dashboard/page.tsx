@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
 import { CirclePlus } from 'lucide-react';
 
 import Container from '@/components/Container';
@@ -17,7 +18,7 @@ import {
 } from '@/components/ui/table';
 
 import { db } from '@/drizzle';
-import { Invoice } from '@/drizzle/schema';
+import { Customer, Invoice } from '@/drizzle/schema';
 import { cn } from '@/lib/utils';
 
 export default async function Home() {
@@ -25,32 +26,29 @@ export default async function Home() {
 
   if (!userId) return;
 
-  // Displaying all invoices for public demo
-
   const data: Array<{
-    invoices: typeof Invoice.$inferSelect;
-    customers: typeof Customer.$inferSelect;
-  }> = await db.select().from(Invoice);
-   .innerJoin(Customer, eq(Invoice.customerId, Customer.id));
+    invoice: typeof Invoice.$inferSelect;
+    customer: typeof Customer.$inferSelect;
+  }> = await db
+    .select()
+    .from(Invoice)
+    .innerJoin(Customer, eq(Invoice.customerId, Customer.id));
 
-  const invoices = data?.map(({ invoices, customers }) => {
+  const invoices = data?.map(({ invoice, customer }) => {
     return {
-      ...invoices,
-      customer: customers,
+      ...invoice,
+      customer,
     };
   });
 
   return (
     <main className='h-full'>
       <Container>
-        <p className='mb-6 rounded-lg bg-yellow-100 px-3 py-2 text-center text-sm text-yellow-800'>
-          Displaying all invoices for public demo. Creation is disabled.
-        </p>
         <div className='mb-6 flex justify-between'>
           <h1 className='text-3xl font-semibold'>Invoices</h1>
           <p>
             <Button className='inline-flex gap-2' variant='ghost' asChild>
-              <Link href='/invoices/new'>
+              <Link href='/invoices/create'>
                 <CirclePlus className='h-4 w-4' />
                 Create Invoice
               </Link>

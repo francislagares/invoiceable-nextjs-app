@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { updateInvoiceStatus } from '@/app/actions';
+import { deleteInvoice, updateInvoiceStatus } from '@/app/actions';
 import { AVAILABLE_STATUSES } from '@/constants/invoice-status';
 import { cn } from '@/lib/utils';
 

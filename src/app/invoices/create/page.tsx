@@ -25,7 +25,7 @@ const Invoice = () => {
   };
 
   return (
-    <main className='mx-auto my-12 flex h-full max-w-5xl flex-col justify-center gap-6'>
+    <main className='h-full'>
       <Container>
         <div className='flex justify-between'>
           <h1 className='text-left text-3xl font-bold'>Create Invoice</h1>

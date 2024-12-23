@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/drizzle';
-import { Invoice } from '@/drizzle/schema';
+import { Customer, Invoice } from '@/drizzle/schema';
 
 import InvoiceDetail from './components/Invoice';
 
@@ -19,21 +19,22 @@ const InvoicePage = async ({ params }: { params: { invoiceId: string } }) => {
     throw new Error('Invalid Invoice ID');
   }
 
-  const [data] = await db
+  const [invoiceData]: Array<{
+    invoice: typeof Invoice.$inferSelect;
+    customer: typeof Customer.$inferSelect;
+  }> = await db
     .select()
     .from(Invoice)
-    .where(eq(Invoice.id, invoiceId))
+    .innerJoin(Customer, eq(Invoice.customerId, Customer.id))
     .limit(1);
 
-  console.log('result', data);
-
-  if (!data) {
+  if (!invoiceData) {
     notFound();
   }
 
   const invoice = {
-    ...data.invoices,
-    customer: data.customers,
+    ...invoiceData.invoice,
+    customer: invoiceData.customer,
   };
 
   return <InvoiceDetail invoice={invoice} />;

@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
-import { Invoice } from './schema';
+import { Customer, Invoice } from './schema';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -11,5 +11,6 @@ const pool = new Pool({
 export const db = drizzle(pool, {
   schema: {
     Invoice,
+    Customer,
   },
 });

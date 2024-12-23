@@ -20,9 +20,22 @@ export const statusEnum = pgEnum(
 
 export const Invoice = pgTable('invoice', {
   id: serial('id').primaryKey().notNull(),
-  createTs: timestamp('create_ts').notNull().defaultNow(),
+  createTs: timestamp('createTs').defaultNow().notNull(),
   value: integer('value').notNull(),
   description: text('description').notNull(),
   userId: text('userId').notNull(),
+  organizationId: text('organizationId'),
+  customerId: integer('customerId')
+    .notNull()
+    .references(() => Customer.id),
   status: statusEnum('status').notNull(),
+});
+
+export const Customer = pgTable('customer', {
+  id: serial('id').primaryKey().notNull(),
+  createTs: timestamp('createTs').defaultNow().notNull(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  userId: text('userId').notNull(),
+  organizationId: text('organizationId'),
 });
