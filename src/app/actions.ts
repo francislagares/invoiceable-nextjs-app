@@ -71,3 +71,39 @@ export const updateInvoiceStatus = async (formData: FormData) => {
 
   revalidatePath(`/invoices/${id}`, 'page');
 };
+
+export const deleteInvoice = async (formData: FormData) => {
+  const { userId, orgId } = await auth();
+
+  // Deleting disabled for demo
+  if (userId !== process.env.ME_ID) return;
+
+  if (!userId) {
+    return;
+  }
+
+  const id = formData.get('id') as string;
+
+  if (orgId) {
+    await db
+      .delete(Invoice)
+      .where(
+        and(
+          eq(Invoice.id, Number.parseInt(id)),
+          eq(Invoice.organizationId, orgId),
+        ),
+      );
+  } else {
+    await db
+      .delete(Invoice)
+      .where(
+        and(
+          eq(Invoice.id, Number.parseInt(id)),
+          eq(Invoice.userId, userId),
+          isNull(Invoice.organizationId),
+        ),
+      );
+  }
+
+  redirect('/dashboard');
+};
